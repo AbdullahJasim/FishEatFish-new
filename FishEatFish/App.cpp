@@ -1,3 +1,59 @@
+//Currently using https://www.3dgep.com/learning-directx12-1/#more-7433 for initial setup
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <shellapi.h>
+
+//min max values create conflicst
+#if defined(min)
+#undef min
+#endif
+
+#if defined(max)
+#undef max
+#endif
+
+//same for CreateWindow function
+#if defined(CreateWindow)
+#undef CreateWindow
+#endif
+
+
+#include <wrl.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+#include <d3dx12.h>
+#include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <Helpers.h>
+
+using namespace Microsoft::WRL;
+
+
+const uint8_t G_NUM_FRAMES = 3;
+bool G_USE_WARP = false;
+uint32_t G_CLIENT_WIDTH = 1280;
+uint32_t G_CLIENT_HEIGHT = 720;
+bool G_IN_INITIALIZED = false;
+
+HWND G_H_WINDOW_HANDLER;
+RECT G_WINDOW_RECT;
+
+ComPtr<ID3D12Device2> G_DEVICE;
+ComPtr<ID3D12CommandQueue> G_COMMAND_QUEUE;
+ComPtr<IDXGISwapChain4> G_SWAP_CHAIN;
+ComPtr<ID3D12Resource> G_BACK_BUFFERS[G_NUM_FRAMES];
+ComPtr<ID3D12GraphicsCommandList> G_COMMAND_LIST;
+ComPtr<ID3D12CommandAllocator> G_COMMAND_ALOCATOR[G_NUM_FRAMES];
+ComPtr<ID3D12DescriptorHeap> G_RTV_DESCRIPTOR_HEAP;
+UINT G_RTV_DESCRIPTOR_SIZE;
+UINT G_CURRENT_BACK_BUFFER_INDEX;
+
+//Not removing the code just yet, need it as reference
+/*
 #include "pch.h"
 #include "App.h"
 
@@ -88,8 +144,18 @@ void App::Load(Platform::String^ entryPoint)
 }
 
 // This method is called after the window becomes active.
-void App::Run()
-{
+void App::Run() {
+	game.Initialize();
+
+	CoreWindow^ window = CoreWindow::GetForCurrentThread();
+
+	while (!windowClosed) {
+		window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+		game.Update();
+		game.Render();
+	}
+
 	while (!m_windowClosed)
 	{
 		if (m_windowVisible)
@@ -226,3 +292,4 @@ std::shared_ptr<DX::DeviceResources> App::GetDeviceResources()
 	}
 	return m_deviceResources;
 }
+*/
